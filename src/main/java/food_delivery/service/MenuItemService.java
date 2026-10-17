@@ -1,0 +1,7 @@
+package food_delivery.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class MenuItemService {
+}
