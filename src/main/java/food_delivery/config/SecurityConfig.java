@@ -46,6 +46,7 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+
                 .authenticationProvider(authenticationProvider)
 
                 .sessionManagement(session ->
@@ -55,13 +56,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // Public registration and login
-                        .requestMatchers(HttpMethod.POST,
+                        .requestMatchers(
+                                HttpMethod.POST,
                                 "/api/users",
                                 "/api/auth/login"
                         ).permitAll()
 
                         // Public restaurant discovery
-                        .requestMatchers(HttpMethod.GET,
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/restaurants",
                                 "/api/restaurants/city",
                                 "/api/restaurants/search",
@@ -70,9 +73,40 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Public menu-category browsing
-                        .requestMatchers(HttpMethod.GET,
+                        .requestMatchers(
+                                HttpMethod.GET,
                                 "/api/restaurants/*/categories"
                         ).permitAll()
+
+                        // Public menu-item browsing
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/categories/*/items"
+                        ).permitAll()
+
+                        // Restaurant owner: view all menu items
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/categories/*/items/manage"
+                        ).hasAuthority("RESTAURANT_OWNER")
+
+                        // Restaurant owner: create menu items
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/categories/*/items"
+                        ).hasAuthority("RESTAURANT_OWNER")
+
+                        // Restaurant owner: update menu items
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/categories/*/items/*"
+                        ).hasAuthority("RESTAURANT_OWNER")
+
+                        // Restaurant owner: delete menu items
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/categories/*/items/*"
+                        ).hasAuthority("RESTAURANT_OWNER")
 
                         // Admin operations
                         .requestMatchers("/api/admin/**")
@@ -90,7 +124,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/customer/**")
                         .hasAuthority("CUSTOMER")
 
-                        // Deny everything else
+                        // Deny all unconfigured routes
                         .anyRequest().denyAll()
                 )
 
