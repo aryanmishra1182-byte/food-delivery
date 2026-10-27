@@ -105,19 +105,20 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);
     }
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponseDTO> handleIllegalState(
-            IllegalStateException exception,
+    @ExceptionHandler(CustomerAddressNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCustomerAddressNotFound(
+            CustomerAddressNotFoundException exception,
             HttpServletRequest request) {
 
         ErrorResponseDTO error = new ErrorResponseDTO();
         error.setTimestamp(LocalDateTime.now());
-        error.setStatus(409);
+        error.setStatus(404);
         error.setMessage(exception.getMessage());
         error.setPath(request.getRequestURI());
 
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)
+                .status(HttpStatus.NOT_FOUND)
                 .body(error);
     }
+
 }
